@@ -12,8 +12,6 @@ public class MenuPanelMove : MonoBehaviour
     private Vector2 initialPosition; // 초기 위치
     private bool isMoving = false; // 이동 중인지 여부
 
-    private static MenuPanelMove instance; // Singleton 인스턴스
-
     void Start()
     {
         initialPosition = panel.anchoredPosition; // 초기 위치 저장
@@ -36,36 +34,11 @@ public class MenuPanelMove : MonoBehaviour
     }
 
 
-    public static MenuPanelMove Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<MenuPanelMove>(); // 씬에서 MenuPanelMove 인스턴스 찾기
-            }
-            return instance;
-        }
-    }
-
     public void stopPanel()
     {
         if (!isMoving)
         {
             panel.anchoredPosition = initialPosition; // 패널을 바로 초기 위치로 설정합니다.
-        }
-    }
-
-    // 다른 클래스에서 호출할 때 사용할 static 메서드
-    public static void StopPanelStatic()
-    {
-        if (Instance != null)
-        {
-            Instance.stopPanel(); // MenuPanelMove의 인스턴스가 존재하면 stopPanel 함수 호출
-        }
-        else
-        {
-            Debug.LogError("MenuPanelMove instance is null."); // 인스턴스가 없는 경우 오류 메시지 출력
         }
     }
 
