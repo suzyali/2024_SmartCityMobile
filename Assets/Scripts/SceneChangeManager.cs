@@ -6,12 +6,24 @@ using UnityEngine.SceneManagement;
 public class SceneChangeManager : MonoBehaviour
 {
 
+
+
+    // MenuPanelMove 스크립트에 대한 참조
+    public MenuPanelMove menuPanelMove;
+
     // 화면 씬 전환 스크립트
 
     //홈 씬으로 전환
     public void HomeSceneChange()
     {
         SceneManager.LoadScene("basicScene_Sensor");
+
+        // MenuPanelMove가 할당되어 있는 경우 stopPanel 함수 호출
+        if (menuPanelMove != null)
+        {
+            menuPanelMove.stopPanel();
+        }
+
     }
 
     //등록 씬으로 전환
