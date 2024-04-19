@@ -5,13 +5,31 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+
+// 서버 응답에 대응하는 클래스 정의
+[System.Serializable]
+public class LoginResponse
+{
+    public bool success;
+    public string temporary_key;
+    public string refresh_key;
+    public string expiration_time;
+    public string message;
+
+}
 
 namespace DevionGames.LoginSystem
 {
+
     public class LoginManager : MonoBehaviour
     {
+
+
         private static LoginManager m_Current;
+        private string temporaryKey; // 임시 키 저장 변수 추가
 
         public static LoginManager current
         {
@@ -21,6 +39,21 @@ namespace DevionGames.LoginSystem
                 return m_Current;
             }
         }
+
+        // 임시 키 접근자 추가
+        public static string TemporaryKey
+        {
+            get
+            {
+                if (m_Current != null)
+                {
+                    return m_Current.temporaryKey;
+                }
+                return string.Empty;
+            }
+        }
+
+
 
         private void Awake()
         {
@@ -172,6 +205,7 @@ namespace DevionGames.LoginSystem
 					}else {
 						if (LoginManager.DefaultSettings.debug)
 							Debug.Log("[CreateAccount] Failed to create account.");
+                            
 						EventHandler.Execute("OnFailedToCreateAccount");
 					}
 				}
@@ -193,7 +227,8 @@ namespace DevionGames.LoginSystem
 
 		private static IEnumerator LoginAccountInternal(string username, string password)
 		{
-			if (LoginManager.Configurations == null)
+           
+            if (LoginManager.Configurations == null)
 			{
 				EventHandler.Execute("OnFailedToLogin");
 				yield break;
@@ -212,25 +247,45 @@ namespace DevionGames.LoginSystem
 				yield return www.SendWebRequest();
                 if (www.result != UnityWebRequest.Result.Success)
                 {
-                    Debug.Log(www.error);
+                    Debug.Log("Network Error: " + www.error);
                 }
                 else
 				{
-					if (www.downloadHandler.text.Contains("true"))
-					{
-						PlayerPrefs.SetString(LoginManager.Server.accountKey, username);
-						if (LoginManager.DefaultSettings.debug)
-							Debug.Log("[LoginAccount] Login was successfull!");
-						EventHandler.Execute("OnLogin");
-					}
-					else
-					{
-						if (LoginManager.DefaultSettings.debug)
-							Debug.Log("[LoginAccount] Failed to login.");
-							Debug.Log(www.downloadHandler.text);
+                    string jsonResponse = www.downloadHandler.text;
+                    LoginResponse response = JsonUtility.FromJson<LoginResponse>(jsonResponse);
+
+                    if (response.success)
+                    {
+                        // 로그인 성공 시 처리
+                        PlayerPrefs.SetString(LoginManager.Server.accountKey, username);
+                        PlayerPrefs.SetString("Username", username);
+                        // 로그인 성공 시 사용자 이름 저장
+                        PlayerPrefs.Save();
+                        if (LoginManager.DefaultSettings.debug)
+                        {
+                            m_Current.temporaryKey = response.temporary_key;
+                            Debug.Log("[LoginAccount] Login was successful!");
+                            Debug.Log(LoginManager.Server.accountKey);
+                            Debug.Log("server meassge:" + jsonResponse);
+                            EventHandler.Execute("OnLogin");
+                            // 여기에 새로운 씬 이름을 넣어 씬 전환
+                            SceneManager.LoadScene("basicScene_Sensor");
+                            
+                            
+                            
+                        }
+                    }
+                    else
+                    {
+                        // 로그인 실패 시 처리
+                        if (LoginManager.DefaultSettings.debug)
+                        {
+                            Debug.Log("[LoginAccount] Failed to login.");
+                            Debug.Log(response.message); // 실패 메시지 출력
+                        }
                         EventHandler.Execute("OnFailedToLogin");
-					}
-				}
+                    }
+                }
 			}
 		}
 

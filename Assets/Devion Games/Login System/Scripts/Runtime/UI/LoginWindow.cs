@@ -3,11 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.TerrainUtils;
 
 namespace DevionGames.LoginSystem
 {
     public class LoginWindow : UIWidget
     {
+/*        public void SceneChanged()
+        {
+            SceneManager.LoadScene("TerrainMap");
+        }
+*/
         public override string[] Callbacks
         {
             get
@@ -86,7 +93,7 @@ namespace DevionGames.LoginSystem
             Execute("OnLogin",new CallbackEventData());
             if (LoginManager.DefaultSettings.loadSceneOnLogin)
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(LoginManager.DefaultSettings.sceneToLoad);
+                //UnityEngine.SceneManagement.SceneManager.LoadScene(LoginManager.DefaultSettings.sceneToLoad);
             }
         }
 

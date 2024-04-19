@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/login.unity
+    guid: 09b60a359b0212e4993a796c5baf48f4
+  - enabled: 1
     path: Assets/Scenes/basicScene_Sensor.unity
     guid: bef788d097429a9439c8041a911aa774
   - enabled: 1
@@ -14,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ReportChatScene.unity
     guid: eba0736014e018143a55289505565dfd
+  - enabled: 1
+    path: Assets/Scenes/VIvoxScens.unity
+    guid: 0ee9df15afa38c145b3b5c6129ee61f6
   m_configObjects: {}
