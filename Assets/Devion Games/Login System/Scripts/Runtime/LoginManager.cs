@@ -259,11 +259,12 @@ namespace DevionGames.LoginSystem
                         // 로그인 성공 시 처리
                         PlayerPrefs.SetString(LoginManager.Server.accountKey, username);
                         PlayerPrefs.SetString("Username", username);
+                        PlayerPrefs.SetString("TemporaryKey", response.temporary_key); // temporary_key 저장
                         // 로그인 성공 시 사용자 이름 저장
                         PlayerPrefs.Save();
                         if (LoginManager.DefaultSettings.debug)
                         {
-                            m_Current.temporaryKey = response.temporary_key;
+                            //m_Current.temporaryKey = response.temporary_key;
                             Debug.Log("[LoginAccount] Login was successful!");
                             Debug.Log(LoginManager.Server.accountKey);
                             Debug.Log("server meassge:" + jsonResponse);
