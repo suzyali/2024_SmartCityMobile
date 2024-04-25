@@ -39,6 +39,8 @@ public class ReportDataManager : MonoBehaviour
 {
 
     ReportDataClass nowReport = new ReportDataClass();
+    public GPSLocation gpsLocation;
+    UploadFilesInFolder uploadFilesInFolder;
 
     string username;
     string imagePath;
@@ -52,7 +54,8 @@ public class ReportDataManager : MonoBehaviour
     public TMP_Dropdown reportTypeDropdown; // Dropdown UI 요소에 대한 참조
     public TMP_InputField reportDataInputField;
     public RawImage imageDisplay; // 이미지를 표시할 RawImage 컴포넌트
-
+    public TMP_Text latitudeInput;
+    public TMP_Text longitudeInput;
 
 
     public static ReportDataManager instance;
@@ -76,6 +79,24 @@ public class ReportDataManager : MonoBehaviour
 
     }
 
+    void Start()
+    {
+        gpsLocation = GetComponent<GPSLocation>(); // GPSLocation 스크립트의 참조를 가져옴
+        uploadFilesInFolder = new UploadFilesInFolder();
+
+        /*
+        gpsLocation.RegisterCallback((location) =>
+        {
+            // 여기에서 위치를 사용하여 보고서 데이터 저장
+            nowReport.coordinate.latitude = location.latitude.ToString();
+            nowReport.coordinate.longitude = location.longitude.ToString();
+
+            // 위치가 업데이트되었으므로 보고서 데이터를 저장
+            SaveReportData();
+        });
+
+        */
+    }
 
 
     // 저장 경로 설정
@@ -85,7 +106,9 @@ public class ReportDataManager : MonoBehaviour
         targetFolder = "/storage/emulated/0/Documents/";
 
 #elif UNITY_EDITOR
-    targetFolder = Application.persistentDataPath + "/";
+         //targetFolder = Application.persistentDataPath + "/";
+         targetFolder = "Assets/Data/upload/";
+
 
 #else
     // 다른 플랫폼에 대한 처리
@@ -93,9 +116,8 @@ public class ReportDataManager : MonoBehaviour
     targetFolder = Application.persistentDataPath;
 #endif
 
-        // 파일명 설정
-        //filename = "Report" + DateTime.Now.ToString("MMddHHmmss") + ".txt";
-        filename = "ReportNew.txt";
+    // 파일명 설정
+    filename = "ReportNew.txt";
 
         // 파일 경로 조합
         Datapath = Path.Combine(targetFolder, filename);
@@ -109,9 +131,12 @@ public class ReportDataManager : MonoBehaviour
     {
 
         /*
+
+        
         // 이미지가 선택되지 않은 경우
         if (string.IsNullOrEmpty(imagePath))
         {
+            nowReport.reportImageFileName = "No image";
             Debug.LogWarning("No image selected!");
             return;
         }
@@ -119,19 +144,31 @@ public class ReportDataManager : MonoBehaviour
         */
 
 
+        // 파일 경로 설정
+        SetSavePath(); // 파일 경로 설정 함수 호출
+
+
         // 아이디의 앞 두 자리 가져오기 (임시로 하드 코딩)
         string userIdPrefix = username.Substring(0, Mathf.Min(2, username.Length));
+        GPSLocation gpsLocation = GetComponent<GPSLocation>();
 
-        SetSavePath();
+      
 
+        /*
+        gpsLocation.RetrieveGPSData();
+        */
 
         nowReport.reportID = username;
         nowReport.reportNumber = userIdPrefix + DateTime.Now.ToString("MMddHHmm");
         nowReport.reportDayTime = DateTime.Now.ToString();
         nowReport.reportType = reportTypeDropdown.options[reportTypeDropdown.value].text;
         nowReport.coordinate = new ReportDataClass.Coordinate();
-        nowReport.coordinate.latitude = "위도";
-        nowReport.coordinate.longitude = "경도";
+
+        // GPS 데이터 가져오기
+        //gpsLocation.RetrieveGPSData();     
+
+        nowReport.coordinate.latitude = latitudeInput.text;
+        nowReport.coordinate.longitude = longitudeInput.text;
         nowReport.reportImageFileType = "png";
         nowReport.reportImageFileName = imagePath;
         nowReport.reportStatus = "접수";
@@ -143,11 +180,16 @@ public class ReportDataManager : MonoBehaviour
         if (!File.Exists(Datapath))
         {
             File.WriteAllText(Datapath, data);
+            Debug.Log("저장");
         }
         else
         {
             File.AppendAllText(Datapath, data);
+            Debug.Log("저장");
+
         }
+
+        //uploadFilesInFolder.UpDataJson();
 
         //입력 창 초기화.
         reportDataInputField.text = "";

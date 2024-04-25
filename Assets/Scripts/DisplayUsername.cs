@@ -14,7 +14,7 @@ public class DisplayUsername : MonoBehaviour
         string username = PlayerPrefs.GetString("Username", "");
         string TemporaryKey = PlayerPrefs.GetString("TemporaryKey", "");
 
-        usernametextComponent.text = TemporaryKey;
+        usernametextComponent.text = username;
     }
 
 

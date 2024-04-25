@@ -271,6 +271,7 @@ namespace DevionGames.LoginSystem
                             EventHandler.Execute("OnLogin");
                             // 여기에 새로운 씬 이름을 넣어 씬 전환
                             SceneManager.LoadScene("basicScene_Sensor");
+                            //Debug.Log("씬 전환이 완료했습니다");
                             
                             
                             

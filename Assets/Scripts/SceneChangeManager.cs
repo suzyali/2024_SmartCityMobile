@@ -32,6 +32,16 @@ public class SceneChangeManager : MonoBehaviour
         SceneManager.LoadScene("CameraScene");
     }
 
+
+
+    //어플리케이션 reset
+    public void SceneRestaret()
+    {
+        SceneManager.LoadScene("login");
+
+    }
+
+
     //어플리케이션 종료
     public void SceneQuit()
     {
